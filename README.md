@@ -124,26 +124,6 @@ pyinstaller --onefile --noconsole excel_gui_search.py
 - **项目管理**：符合PEP 518标准的现代Python项目结构
 - **代码质量**：flake8代码风格检查，bandit安全检查，safety漏洞扫描
 
-## 📦 项目配置
-
-项目使用现代Python项目管理标准：
-
-### pyproject.toml
-项目采用PEP 518标准的`pyproject.toml`文件进行配置：
-- 项目元数据管理
-- 依赖关系声明
-- 构建系统配置
-- 开发工具配置
-
-### requirements文件
-- `requirements.txt`: 运行时依赖（仅包含openpyxl）
-- `requirements-dev.txt`: 开发依赖（包含打包、测试、代码质量检查工具）
-
-### 代码质量保证
-- **flake8**: 代码风格检查
-- **bandit**: 安全漏洞静态分析
-- **safety**: 依赖包安全性检查
-
 ## 📁 项目结构
 
 ```
@@ -185,19 +165,6 @@ git clone https://github.com/xiqiuqiu/easy_file_search.git
 cd easy_search
 pip install -r requirements.txt
 python excel_gui_search.py
-```
-
-### 使用现代Python项目管理（推荐）
-如果您习惯使用现代Python项目管理工具：
-```bash
-# 使用pip安装（支持pyproject.toml）
-pip install .
-
-# 或者以开发模式安装
-pip install -e .
-
-# 安装开发依赖
-pip install -e .[dev]
 ```
 
 ### 可执行文件
