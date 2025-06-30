@@ -27,7 +27,7 @@
 
 ### 1. 更新个人信息
 在以下文件中替换占位符信息：
-- `README.md` 中的 `your-username` 和 `your-email@example.com`
+- `README.md` 中的 `your-username` 和 `ixiqiuqiu@gmail.com`
 - `SECURITY.md` 中的邮箱地址
 - `pyproject.toml` 中的作者信息和仓库链接
 

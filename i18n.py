@@ -94,7 +94,6 @@ _i18n = I18n()
 
 def init_i18n(language=None):
     """初始化国际化"""
-    global _i18n
     if language is None:
         # 从配置文件读取语言设置
         config = get_config()

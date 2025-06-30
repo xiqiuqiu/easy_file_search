@@ -188,8 +188,8 @@ pyinstaller excel_gui_search.spec
 
 如果您有任何问题或建议，请通过以下方式联系：
 
-- 提交 [Issue](https://github.com/your-username/easy_search/issues)
-- 发送邮件到：your-email@example.com
+- 提交 [Issue](https://github.com/xiqiuqiu/easy_file_search/issues)
+- 发送邮件到：ixiqiuqiu@gmail.com
 
 ---
 
