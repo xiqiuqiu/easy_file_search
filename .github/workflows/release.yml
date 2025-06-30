@@ -1,0 +1,180 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install -r requirements-dev.txt
+    
+    - name: Build executables (Windows)
+      if: matrix.os == 'windows-latest'
+      run: |
+        # Build basic version
+        pyinstaller excel_gui_search.spec
+        # Build multilingual version
+        pyinstaller excel_gui_search_i18n.spec
+        # Package Windows versions
+        cd dist
+        powershell Compress-Archive -Path excel_gui_search.exe -DestinationPath excel_gui_search_basic_windows.zip
+        powershell Compress-Archive -Path excel_gui_search_i18n.exe -DestinationPath excel_gui_search_i18n_windows.zip
+    
+    - name: Build executables (macOS)
+      if: matrix.os == 'macos-latest'
+      run: |
+        # Build basic version
+        pyinstaller excel_gui_search.spec
+        # Build multilingual version
+        pyinstaller excel_gui_search_i18n.spec
+        # Package macOS versions
+        cd dist
+        zip -r excel_gui_search_basic_macos.zip excel_gui_search
+        zip -r excel_gui_search_i18n_macos.zip excel_gui_search_i18n
+    
+    - name: Build executables (Linux)
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        # Build basic version
+        pyinstaller excel_gui_search.spec
+        # Build multilingual version
+        pyinstaller excel_gui_search_i18n.spec
+        # Package Linux versions
+        cd dist
+        tar -czf excel_gui_search_basic_linux.tar.gz excel_gui_search
+        tar -czf excel_gui_search_i18n_linux.tar.gz excel_gui_search_i18n
+    
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: executables-${{ matrix.os }}
+        path: dist/*_windows.zip
+      if: matrix.os == 'windows-latest'
+    
+    - name: Upload artifacts (macOS)
+      uses: actions/upload-artifact@v3
+      with:
+        name: executables-${{ matrix.os }}
+        path: dist/*_macos.zip
+      if: matrix.os == 'macos-latest'
+    
+    - name: Upload artifacts (Linux)
+      uses: actions/upload-artifact@v3
+      with:
+        name: executables-${{ matrix.os }}
+        path: dist/*_linux.tar.gz
+      if: matrix.os == 'ubuntu-latest'
+  
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Download artifacts
+      uses: actions/download-artifact@v3
+    
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: false
+        prerelease: false
+        body: |
+          ## Excel关键词搜索工具 - Release ${{ github.ref }}
+          
+          ### 下载说明
+          - `*_basic_*`: 基础版本，仅支持中文界面
+          - `*_i18n_*`: 多语言版本，支持中英文切换
+          
+          ### 平台支持
+          - Windows: `.zip` 文件
+          - macOS: `.zip` 文件
+          - Linux: `.tar.gz` 文件
+          
+          ### 使用方法
+          1. 下载对应平台的文件
+          2. 解压后直接运行可执行文件
+          3. 多语言版本可在设置中切换语言
+    
+    - name: Upload Windows Basic
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./executables-windows-latest/excel_gui_search_basic_windows.zip
+        asset_name: excel_gui_search_basic_windows.zip
+        asset_content_type: application/zip
+    
+    - name: Upload Windows I18n
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./executables-windows-latest/excel_gui_search_i18n_windows.zip
+        asset_name: excel_gui_search_i18n_windows.zip
+        asset_content_type: application/zip
+    
+    - name: Upload macOS Basic
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./executables-macos-latest/excel_gui_search_basic_macos.zip
+        asset_name: excel_gui_search_basic_macos.zip
+        asset_content_type: application/zip
+    
+    - name: Upload macOS I18n
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./executables-macos-latest/excel_gui_search_i18n_macos.zip
+        asset_name: excel_gui_search_i18n_macos.zip
+        asset_content_type: application/zip
+    
+    - name: Upload Linux Basic
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./executables-ubuntu-latest/excel_gui_search_basic_linux.tar.gz
+        asset_name: excel_gui_search_basic_linux.tar.gz
+        asset_content_type: application/gzip
+    
+    - name: Upload Linux I18n
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./executables-ubuntu-latest/excel_gui_search_i18n_linux.tar.gz
+        asset_name: excel_gui_search_i18n_linux.tar.gz
+        asset_content_type: application/gzip
