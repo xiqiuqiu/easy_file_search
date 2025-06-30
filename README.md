@@ -9,7 +9,7 @@
 - 🎯 **多关键词搜索**：支持同时搜索多个关键词（用逗号分隔）
 - 📈 **统计功能**：显示每个关键词在文件中的出现次数
 - 💾 **导出功能**：搜索结果可导出为CSV文件
-- 🖱️ **快速打开**：双击搜索结果直接打开对应的Excel文件
+- 🖱️ **快速打开**：选中搜索结果可直接打开对应的Excel文件
 - 🎨 **智能显示**：单文件搜索时自动优化显示界面
 - 🌍 **多语言支持**：支持中文和英文界面切换
 - ⚙️ **配置保存**：自动保存用户偏好设置
@@ -21,13 +21,13 @@
 - Python 3.6+
 - 依赖包：
   - `tkinter`（Python标准库）
-  - `openpyxl`
+  - `openpyxl==3.1.2`
 
 ### 安装
 
 1. 克隆仓库：
 ```bash
-git clone https://github.com/zhiyi/easy_search.git
+git clone https://github.com/xiqiuqiu/easy_file_search.git
 cd easy_search
 ```
 
@@ -49,6 +49,21 @@ python excel_gui_search.py
 **多语言版本（推荐）：**
 ```bash
 python excel_gui_search_i18n.py
+```
+
+### 现代Python项目管理方式
+
+如果您习惯使用现代Python包管理，也可以这样安装：
+
+```bash
+# 仅安装运行依赖
+pip install .
+
+# 开发模式安装（支持实时编辑）
+pip install -e .
+
+# 安装包含开发工具的完整环境
+pip install -e .[dev]
 ```
 
 ### 多语言支持
@@ -101,11 +116,33 @@ pyinstaller --onefile --noconsole excel_gui_search.py
 ## 🛠️ 技术栈
 
 - **GUI框架**：tkinter
-- **Excel处理**：openpyxl
+- **Excel处理**：openpyxl==3.1.2
 - **文件操作**：os, csv
 - **跨平台支持**：platform, subprocess
 - **国际化**：自定义i18n模块
-- **配置管理**：JSON配置文件
+- **配置管理**：JSON配置文件 + pyproject.toml
+- **项目管理**：符合PEP 518标准的现代Python项目结构
+- **代码质量**：flake8代码风格检查，bandit安全检查，safety漏洞扫描
+
+## 📦 项目配置
+
+项目使用现代Python项目管理标准：
+
+### pyproject.toml
+项目采用PEP 518标准的`pyproject.toml`文件进行配置：
+- 项目元数据管理
+- 依赖关系声明
+- 构建系统配置
+- 开发工具配置
+
+### requirements文件
+- `requirements.txt`: 运行时依赖（仅包含openpyxl）
+- `requirements-dev.txt`: 开发依赖（包含打包、测试、代码质量检查工具）
+
+### 代码质量保证
+- **flake8**: 代码风格检查
+- **bandit**: 安全漏洞静态分析
+- **safety**: 依赖包安全性检查
 
 ## 📁 项目结构
 
@@ -115,15 +152,19 @@ easy_search/
 ├── excel_gui_search_i18n.py # 主程序文件（多语言版本）
 ├── i18n.py                 # 国际化支持模块
 ├── config.py               # 配置管理模块
+├── pyproject.toml          # 项目配置文件（PEP 518）
+├── config.json             # 运行时配置文件
 ├── locales/                # 语言文件目录
 │   ├── en.json            # 英文翻译
 │   └── zh_CN.json         # 中文翻译
-├── excel_gui_search.spec   # PyInstaller配置文件
+├── excel_gui_search.spec   # PyInstaller配置文件（基础版本）
+├── excel_gui_search_i18n.spec # PyInstaller配置文件（多语言版本）
 ├── 使用说明.md             # 详细使用说明
 ├── README.md               # 项目说明文档
-├── requirements.txt        # 依赖包列表
+├── requirements.txt        # 运行依赖列表
 ├── requirements-dev.txt    # 开发依赖列表
 ├── LICENSE                 # 开源协议
+├── __pycache__/           # Python缓存目录
 ├── build/                  # PyInstaller构建缓存目录
 └── dist/                   # PyInstaller输出目录（包含可执行文件）
 ```
@@ -140,10 +181,23 @@ easy_search/
 ### 源码运行
 适合有Python环境的用户：
 ```bash
-git clone https://github.com/your-username/easy_search.git
+git clone https://github.com/xiqiuqiu/easy_file_search.git
 cd easy_search
 pip install -r requirements.txt
 python excel_gui_search.py
+```
+
+### 使用现代Python项目管理（推荐）
+如果您习惯使用现代Python项目管理工具：
+```bash
+# 使用pip安装（支持pyproject.toml）
+pip install .
+
+# 或者以开发模式安装
+pip install -e .
+
+# 安装开发依赖
+pip install -e .[dev]
 ```
 
 ### 可执行文件
@@ -154,17 +208,57 @@ python excel_gui_search.py
 ### 自行打包
 如果您需要自定义打包选项：
 ```bash
-# 基础打包（生成单个exe文件）
+# 基础版本打包（生成单个exe文件）
 pyinstaller --onefile --noconsole excel_gui_search.py
+
+# 多语言版本打包（推荐）
+pyinstaller --onefile --noconsole excel_gui_search_i18n.py
 
 # 高级打包（使用spec文件，支持更多配置）
 pyinstaller excel_gui_search.spec
+# 或者多语言版本
+pyinstaller excel_gui_search_i18n.spec
 ```
 
 **注意事项：**
 - 打包后的文件较大（约30-50MB），因为包含了Python解释器
 - 首次运行可能较慢，后续运行速度正常
 - 不同操作系统需要在对应系统上进行打包
+
+## 🚀 开发工作流程
+
+### 代码质量检查
+
+项目包含多个代码质量检查工具，在提交代码前建议运行：
+
+```bash
+# 代码风格检查
+flake8 .
+
+# 安全漏洞检查
+bandit -r .
+
+# 依赖安全性检查
+safety check
+```
+
+### 打包测试
+
+在发布前测试打包：
+
+```bash
+# 测试基础版本打包
+pyinstaller excel_gui_search.spec
+
+# 测试多语言版本打包（推荐）
+pyinstaller excel_gui_search_i18n.spec
+```
+
+### 配置文件说明
+
+- `config.json`: 运行时用户配置（程序自动生成和维护）
+- `pyproject.toml`: 项目元数据和构建配置
+- `*.spec`: PyInstaller打包配置文件
 
 ## 🤝 贡献
 
