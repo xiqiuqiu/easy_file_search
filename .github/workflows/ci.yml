@@ -37,19 +37,19 @@ jobs:
 
     - name: Test basic functionality
       run: |
-        python -c "import excel_gui_search; print('Basic version import successful')"
+        python test_imports.py
         
-    - name: Test multilingual version
+    - name: Test multilingual version (direct import)
       run: |
-        python -c "import excel_gui_search_i18n; print('Multilingual version import successful')"
+        python -c "import excel_gui_search_i18n; print('Multilingual version direct import successful')"
         
-    - name: Test i18n module
+    - name: Test i18n module (direct import)
       run: |
-        python -c "from i18n import init_i18n, t; print('i18n module import successful')"
+        python -c "from i18n import init_i18n, t; print('i18n module direct import successful')"
         
-    - name: Test config module
+    - name: Test config module (direct import)
       run: |
-        python -c "from config import get_config; print('config module import successful')"
+        python -c "from config import get_config; print('config module direct import successful')"
 
   security:
     runs-on: ubuntu-latest

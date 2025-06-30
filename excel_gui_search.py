@@ -69,6 +69,7 @@ def search_all_excels(directory, keywords):
     return results, global_keyword_counts
 
 def browse_directory():
+    global path_var
     path = filedialog.askdirectory()
     if path:
         path_var.set(path)
@@ -77,7 +78,7 @@ def browse_directory():
 current_search_results = []
 
 def start_search():
-    global current_search_results
+    global current_search_results, path_var, keywords_var, tree, status_var
     directory = path_var.get()
     keyword_input = keywords_var.get()
     if not os.path.exists(directory):
@@ -126,6 +127,7 @@ def start_search():
         status_var.set(f"搜索完成，共命中 {len(results)} 条记录 | {stats_text}")
 
 def export_csv():
+    global tree, status_var
     if not tree.get_children():
         messagebox.showinfo("提示", "没有可以导出的结果")
         return
@@ -157,6 +159,7 @@ def export_csv():
 
 def open_file():
     """打開選中行對應的文件"""
+    global tree
     selection = tree.selection()
     if not selection:
         messagebox.showinfo("提示", "請先選擇一條記錄")
@@ -191,44 +194,51 @@ def open_file():
     except Exception as e:
         messagebox.showerror("錯誤", f"無法打開文件：{e}")
 
-# GUI 界面搭建
-root = tk.Tk()
-root.title("Excel关键词搜索工具")
-root.geometry("1000x550")
+def main():
+    """主函数，初始化并运行GUI"""
+    # GUI 界面搭建
+    global root, path_var, keywords_var, status_var, tree
+    
+    root = tk.Tk()
+    root.title("Excel关键词搜索工具")
+    root.geometry("1000x550")
 
-path_var = tk.StringVar()
-keywords_var = tk.StringVar()
-status_var = tk.StringVar(value="就緒")
+    path_var = tk.StringVar()
+    keywords_var = tk.StringVar()
+    status_var = tk.StringVar(value="就緒")
 
-frame_top = tk.Frame(root)
-frame_top.pack(fill="x", padx=10, pady=5)
+    frame_top = tk.Frame(root)
+    frame_top.pack(fill="x", padx=10, pady=5)
 
-tk.Label(frame_top, text="搜索路徑：").pack(side="left")
-tk.Entry(frame_top, textvariable=path_var, width=60).pack(side="left", padx=5)
-tk.Button(frame_top, text="瀏覽...", command=browse_directory).pack(side="left")
+    tk.Label(frame_top, text="搜索路徑：").pack(side="left")
+    tk.Entry(frame_top, textvariable=path_var, width=60).pack(side="left", padx=5)
+    tk.Button(frame_top, text="瀏覽...", command=browse_directory).pack(side="left")
 
-frame_mid = tk.Frame(root)
-frame_mid.pack(fill="x", padx=10, pady=5)
+    frame_mid = tk.Frame(root)
+    frame_mid.pack(fill="x", padx=10, pady=5)
 
-tk.Label(frame_mid, text="关键词（多個用英文逗號分隔）：").pack(side="left")
-tk.Entry(frame_mid, textvariable=keywords_var, width=50).pack(side="left", padx=5)
+    tk.Label(frame_mid, text="关键词（多個用英文逗號分隔）：").pack(side="left")
+    tk.Entry(frame_mid, textvariable=keywords_var, width=50).pack(side="left", padx=5)
 
-frame_btn = tk.Frame(root)
-frame_btn.pack(fill="x", padx=10, pady=5)
+    frame_btn = tk.Frame(root)
+    frame_btn.pack(fill="x", padx=10, pady=5)
 
-tk.Button(frame_btn, text="搜索Excel", command=start_search).pack(side="left")
-tk.Button(frame_btn, text="导出為CSV", command=export_csv).pack(side="left", padx=10)
-tk.Button(frame_btn, text="打開文件", command=open_file).pack(side="left", padx=10)
+    tk.Button(frame_btn, text="搜索Excel", command=start_search).pack(side="left")
+    tk.Button(frame_btn, text="导出為CSV", command=export_csv).pack(side="left", padx=10)
+    tk.Button(frame_btn, text="打開文件", command=open_file).pack(side="left", padx=10)
 
-columns = ["文件名", "工作表", "單元格", "命中关键词", "內容", "文件路徑"]
-tree = ttk.Treeview(root, columns=columns, show="headings")
-for col in columns:
-    tree.heading(col, text=col)
-    tree.column(col, width=150 if col not in ["內容", "文件路徑"] else 300)
+    columns = ["文件名", "工作表", "單元格", "命中关键词", "內容", "文件路徑"]
+    tree = ttk.Treeview(root, columns=columns, show="headings")
+    for col in columns:
+        tree.heading(col, text=col)
+        tree.column(col, width=150 if col not in ["內容", "文件路徑"] else 300)
 
-tree.pack(fill="both", expand=True, padx=10, pady=5)
+    tree.pack(fill="both", expand=True, padx=10, pady=5)
 
-status_bar = tk.Label(root, textvariable=status_var, anchor="w")
-status_bar.pack(fill="x")
+    status_bar = tk.Label(root, textvariable=status_var, anchor="w")
+    status_bar.pack(fill="x")
 
-root.mainloop()
+    root.mainloop()
+
+if __name__ == "__main__":
+    main()
